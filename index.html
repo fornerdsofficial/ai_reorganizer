@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 조직개편 자동 편성 서비스 - 데이터 수집</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
+  <link rel="stylesheet" href="assets/css/common.css">
+  <link rel="stylesheet" href="assets/css/data-collection.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <img src="assets/images/logo.svg" alt="AI 조직개편">
+          <span>AI 조직개편</span>
+        </div>
+      </div>
+      <nav class="nav-menu">
+        <a href="index.html" class="nav-item active">
+          <i class="fas fa-file-upload"></i>
+          <span>데이터 수집</span>
+        </a>
+        <a href="dashboard.html" class="nav-item">
+          <i class="fas fa-chart-line"></i>
+          <span>분석 대시보드</span>
+        </a>
+        <a href="scenario.html" class="nav-item">
+          <i class="fas fa-sitemap"></i>
+          <span>시나리오 생성/평가</span>
+        </a>
+        <a href="implementation.html" class="nav-item">
+          <i class="fas fa-tasks"></i>
+          <span>실행 계획 수립</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="header">
+        <h1 class="page-title">데이터 수집 및 입력</h1>
+        <div class="user-menu">
+          <div class="notification-bell">
+            <i class="far fa-bell"></i>
+            <span class="badge">2</span>
+          </div>
+          <div class="user-info">
+            <img src="https://via.placeholder.com/36" alt="User">
+            <span>관리자</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="content">
+        <!-- Progress Stepper -->
+        <div class="stepper">
+          <div class="step active">
+            <div class="step-icon">1</div>
+            <div class="step-label">데이터 수집</div>
+          </div>
+          <div class="step">
+            <div class="step-icon">2</div>
+            <div class="step-label">AI 분석</div>
+          </div>
+          <div class="step">
+            <div class="step-icon">3</div>
+            <div class="step-label">시나리오 생성</div>
+          </div>
+          <div class="step">
+            <div class="step-icon">4</div>
+            <div class="step-label">실행 계획</div>
+          </div>
+        </div>
+
+        <!-- File Upload Section -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">인력 정보 업로드</h2>
+            <button class="btn btn-outline" id="download-template">
+              <i class="fas fa-download"></i> 템플릿 다운로드
+            </button>
+          </div>
+          <div class="card-body">
+            <div class="upload-box">
+              <div class="upload-icon">
+                <i class="fas fa-cloud-upload-alt"></i>
+              </div>
+              <div class="upload-text">
+                <p>CSV, Excel 파일을 드래그하거나 클릭하여 업로드하세요</p>
+                <p class="upload-format">지원 포맷: .csv, .xlsx, .xls</p>
+              </div>
+              <input type="file" id="file-upload" class="file-input" accept=".csv, .xlsx, .xls">
+            </div>
+            <div class="upload-list" id="upload-list">
+              <!-- Upload items will be added here dynamically -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Data Preview Grid -->
+        <div class="card" id="data-preview-container" style="display: none;">
+          <div class="card-header">
+            <h2 class="card-title">데이터 미리보기</h2>
+            <div class="card-actions">
+              <button class="btn btn-outline" id="reset-data">
+                <i class="fas fa-redo"></i> 초기화
+              </button>
+              <button class="btn btn-primary" id="validate-data">
+                <i class="fas fa-check"></i> 데이터 검증
+              </button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="data-grid-wrapper">
+              <table class="table data-grid" id="data-grid">
+                <!-- Table will be generated dynamically -->
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Organization Structure Input -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">조직 구조 및 운영 데이터 입력</h2>
+          </div>
+          <div class="card-body">
+            <form id="org-form">
+              <div class="grid grid-2">
+                <div class="form-group">
+                  <label class="form-label">회사명</label>
+                  <input type="text" class="form-control" placeholder="회사명을 입력하세요">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">조직 규모</label>
+                  <select class="form-control">
+                    <option>소기업 (50명 이하)</option>
+                    <option>중소기업 (50-300명)</option>
+                    <option>중견기업 (300-1000명)</option>
+                    <option>대기업 (1000명 이상)</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">현재 조직 구조 설명</label>
+                <textarea class="form-control" rows="3" placeholder="현재 조직 구조에 대해 간략히 설명해주세요"></textarea>
+              </div>
+              <div class="grid grid-3">
+                <div class="form-group">
+                  <label class="form-label">총 부서 수</label>
+                  <input type="number" class="form-control" placeholder="부서 수">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">총 인원 수</label>
+                  <input type="number" class="form-control" placeholder="인원 수">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">연간 운영 예산 (백만원)</label>
+                  <input type="number" class="form-control" placeholder="예산">
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- External System Integration -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">외부 시스템 연동</h2>
+            <button class="btn btn-outline" id="add-integration">
+              <i class="fas fa-plus"></i> 연동 추가
+            </button>
+          </div>
+          <div class="card-body">
+            <div class="integration-list">
+              <div class="integration-item">
+                <div class="integration-icon">
+                  <i class="fas fa-database"></i>
+                </div>
+                <div class="integration-details">
+                  <h3>ERP 시스템</h3>
+                  <p>인사 데이터, 급여 정보, 조직도 정보를 자동으로 불러옵니다.</p>
+                </div>
+                <div class="integration-status connected">
+                  <span class="badge badge-success">연결됨</span>
+                  <button class="btn btn-sm btn-outline">설정</button>
+                </div>
+              </div>
+              <div class="integration-item">
+                <div class="integration-icon">
+                  <i class="fas fa-user-tie"></i>
+                </div>
+                <div class="integration-details">
+                  <h3>HR 시스템</h3>
+                  <p>성과평가, 역량 평가 데이터를 불러옵니다.</p>
+                </div>
+                <div class="integration-status">
+                  <span class="badge badge-warning">미연결</span>
+                  <button class="btn btn-sm btn-primary">연결하기</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Strategic Direction and Goals -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">전략 방향 및 목표 설정</h2>
+          </div>
+          <div class="card-body">
+            <form id="strategy-form">
+              <div class="form-group">
+                <label class="form-label">사업 목표</label>
+                <textarea class="form-control" rows="3" placeholder="사업 목표를 구체적으로 작성해주세요"></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">조직개편 목적</label>
+                <div class="checkboxes">
+                  <label class="checkbox-container">
+                    <input type="checkbox" checked>
+                    <span class="checkmark"></span>
+                    비용 절감
+                  </label>
+                  <label class="checkbox-container">
+                    <input type="checkbox">
+                    <span class="checkmark"></span>
+                    생산성 향상
+                  </label>
+                  <label class="checkbox-container">
+                    <input type="checkbox">
+                    <span class="checkmark"></span>
+                    업무 효율성
+                  </label>
+                  <label class="checkbox-container">
+                    <input type="checkbox">
+                    <span class="checkmark"></span>
+                    인재 활용
+                  </label>
+                  <label class="checkbox-container">
+                    <input type="checkbox">
+                    <span class="checkmark"></span>
+                    조직 문화 개선
+                  </label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">주요 KPI 설정</label>
+                <div class="kpi-list" id="kpi-list">
+                  <div class="kpi-item">
+                    <div class="kpi-input">
+                      <input type="text" class="form-control" placeholder="KPI 항목">
+                    </div>
+                    <div class="kpi-input">
+                      <input type="text" class="form-control" placeholder="목표 수치">
+                    </div>
+                    <div class="kpi-actions">
+                      <button class="btn-icon remove-kpi">
+                        <i class="fas fa-times"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <button type="button" class="btn btn-outline btn-sm mt-10" id="add-kpi">
+                  <i class="fas fa-plus"></i> KPI 추가
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Next Steps -->
+        <div class="actions-container">
+          <button class="btn btn-outline" id="save-draft">
+            <i class="far fa-save"></i> 임시저장
+          </button>
+          <button class="btn btn-primary" id="next-step">
+            <i class="fas fa-arrow-right"></i> 분석 시작
+          </button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal for Data Validation -->
+  <div class="modal-backdrop" id="validation-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">데이터 검증 결과</h3>
+        <span class="modal-close" id="close-modal">&times;</span>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-success">
+          <i class="fas fa-check-circle"></i> 인력 데이터가 성공적으로 검증되었습니다.
+        </div>
+        <div class="validation-summary">
+          <div class="validation-stat">
+            <div class="stat-number">152</div>
+            <div class="stat-label">총 데이터 수</div>
+          </div>
+          <div class="validation-stat">
+            <div class="stat-number">0</div>
+            <div class="stat-label">오류 수</div>
+          </div>
+          <div class="validation-stat">
+            <div class="stat-number">3</div>
+            <div class="stat-label">경고 수</div>
+          </div>
+        </div>
+        <div class="validation-details">
+          <h4>경고 내용</h4>
+          <ul class="validation-list">
+            <li class="validation-item warning">
+              <i class="fas fa-exclamation-triangle"></i>
+              <div class="validation-message">
+                <span class="validation-location">행 24, 열 '역량평가'</span>
+                <p>일부 사용자(3명)의 역량평가 데이터가 누락되었습니다.</p>
+              </div>
+            </li>
+            <li class="validation-item warning">
+              <i class="fas fa-exclamation-triangle"></i>
+              <div class="validation-message">
+                <span class="validation-location">행 56-58, 열 '전문분야'</span>
+                <p>중복된 전문분야가 발견되었습니다. 데이터를 확인해주세요.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="fix-errors">오류 수정</button>
+        <button class="btn btn-primary" id="continue-anyway">계속 진행</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/data-collection.js"></script>
+</body>
+</html>

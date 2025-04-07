@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 조직개편 자동 편성 서비스 - 시나리오 생성/평가</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
+  <link rel="stylesheet" href="assets/css/common.css">
+  <link rel="stylesheet" href="assets/css/scenario.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <img src="assets/images/logo.svg" alt="AI 조직개편">
+          <span>AI 조직개편</span>
+        </div>
+      </div>
+      <nav class="nav-menu">
+        <a href="index.html" class="nav-item">
+          <i class="fas fa-file-upload"></i>
+          <span>데이터 수집</span>
+        </a>
+        <a href="dashboard.html" class="nav-item">
+          <i class="fas fa-chart-line"></i>
+          <span>분석 대시보드</span>
+        </a>
+        <a href="scenario.html" class="nav-item active">
+          <i class="fas fa-sitemap"></i>
+          <span>시나리오 생성/평가</span>
+        </a>
+        <a href="implementation.html" class="nav-item">
+          <i class="fas fa-tasks"></i>
+          <span>실행 계획 수립</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="header">
+        <h1 class="page-title">시나리오 생성 및 평가</h1>
+        <div class="user-menu">
+          <div class="notification-bell">
+            <i class="far fa-bell"></i>
+            <span class="badge">2</span>
+          </div>
+          <div class="user-info">
+            <img src="https://via.placeholder.com/36" alt="User">
+            <span>관리자</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="content">
+        <!-- Progress Stepper -->
+        <div class="stepper">
+          <div class="step completed">
+            <div class="step-icon">1</div>
+            <div class="step-label">데이터 수집</div>
+          </div>
+          <div class="step completed">
+            <div class="step-icon">2</div>
+            <div class="step-label">AI 분석</div>
+          </div>
+          <div class="step active">
+            <div class="step-icon">3</div>
+            <div class="step-label">시나리오 생성</div>
+          </div>
+          <div class="step">
+            <div class="step-icon">4</div>
+            <div class="step-label">실행 계획</div>
+          </div>
+        </div>
+
+        <!-- Scenario Generation Controls -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">시나리오 생성 설정</h2>
+            <button class="btn btn-primary" id="generate-scenarios">
+              <i class="fas fa-magic"></i> 시나리오 생성
+            </button>
+          </div>
+          <div class="card-body">
+            <div class="grid grid-3">
+              <div class="form-group">
+                <label class="form-label">최적화 목표</label>
+                <select class="form-control" id="optimization-goal">
+                  <option value="efficiency">효율성 최대화</option>
+                  <option value="cost">비용 절감</option>
+                  <option value="talent">인재 활용 최적화</option>
+                  <option value="balanced" selected>균형 잡힌 접근</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">시나리오 수</label>
+                <select class="form-control" id="scenario-count">
+                  <option value="3">3개</option>
+                  <option value="5" selected>5개</option>
+                  <option value="7">7개</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">변화 강도</label>
+                <div class="range-slider">
+                  <input type="range" min="1" max="5" value="3" class="slider" id="change-intensity">
+                  <div class="range-labels">
+                    <span>최소</span>
+                    <span>보통</span>
+                    <span>최대</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">추가 제약 조건</label>
+              <div class="constraints-container">
+                <label class="checkbox-container">
+                  <input type="checkbox" id="constraint-core">
+                  <span class="checkmark"></span>
+                  핵심 인력 변경 최소화
+                </label>
+                <label class="checkbox-container">
+                  <input type="checkbox" id="constraint-dept">
+                  <span class="checkmark"></span>
+                  부서 통폐합 제한
+                </label>
+                <label class="checkbox-container">
+                  <input type="checkbox" id="constraint-budget">
+                  <span class="checkmark"></span>
+                  예산 10% 이내 유지
+                </label>
+                <label class="checkbox-container">
+                  <input type="checkbox" id="constraint-headcount">
+                  <span class="checkmark"></span>
+                  현 인원 유지
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Loading State (hidden by default) -->
+        <div class="spinner-overlay" id="loading-spinner" style="display: none;">
+          <div class="spinner"></div>
+          <div class="spinner-text">시나리오를 생성 중입니다...</div>
+        </div>
+
+        <!-- Scenarios Section (hidden initially, shown after generation) -->
+        <div id="scenarios-section" style="display: none;">
+          <div class="scenarios-header">
+            <h2>생성된 시나리오</h2>
+            <div class="scenarios-actions">
+              <div class="form-group">
+                <label class="form-label">정렬 기준</label>
+                <select class="form-control" id="sort-scenarios">
+                  <option value="recommended">추천순</option>
+                  <option value="efficiency">효율성순</option>
+                  <option value="cost">비용순</option>
+                  <option value="risk">리스크순</option>
+                </select>
+              </div>
+              <button class="btn btn-outline" id="compare-scenarios">
+                <i class="fas fa-columns"></i> 비교하기
+              </button>
+            </div>
+          </div>
+
+          <!-- Scenario Cards Container -->
+          <div class="scenario-cards">
+            <!-- Scenario Card 1 -->
+            <div class="scenario-card" data-id="1">
+              <div class="scenario-header">
+                <div class="scenario-title">시나리오 A</div>
+                <div class="scenario-badge recommended">
+                  <i class="fas fa-star"></i> 추천
+                </div>
+              </div>
+              <div class="scenario-metrics">
+                <div class="metric">
+                  <div class="metric-value">+15%</div>
+                  <div class="metric-label">효율성</div>
+                </div>
+                <div class="metric">
+                  <div class="metric-value">-12%</div>
+                  <div class="metric-label">비용</div>
+                </div>
+                <div class="metric">
+                  <div class="metric-value">중간</div>
+                  <div class="metric-label">리스크</div>
+                </div>
+              </div>
+              <div class="scenario-summary">
+                <p>기존 부서를 6개에서 4개로 통합하고, 핵심 업무 중심으로 인력을 재배치하는 시나리오입니다.</p>
+              </div>
+              <div class="scenario-highlights">
+                <div class="highlight positive">
+                  <i class="fas fa-plus-circle"></i>
+                  <span>인건비 12% 절감</span>
+                </div>
+                <div class="highlight positive">
+                  <i class="fas fa-plus-circle"></i>
+                  <span>의사결정 프로세스 간소화</span>
+                </div>
+                <div class="highlight negative">
+                  <i class="fas fa-minus-circle"></i>
+                  <span>중간 관리자 직급 축소</span>
+                </div>
+              </div>
+              <div class="scenario-actions">
+                <button class="btn btn-outline btn-sm view-details" data-id="1">
+                  <i class="fas fa-eye"></i> 상세 보기
+                </button>
+                <button class="btn btn-primary btn-sm select-scenario" data-id="1">
+                  <i class="fas fa-check"></i> 선택
+                </button>
+              </div>
+            </div>
+
+            <!-- Scenario Card 2 -->
+            <div class="scenario-card" data-id="2">
+              <div class="scenario-header">
+                <div class="scenario-title">시나리오 B</div>
+              </div>
+              <div class="scenario-metrics">
+                <div class="metric">
+                  <div class="metric-value">+10%</div>
+                  <div class="metric-label">효율성</div>
+                </div>
+                <div class="metric">
+                  <div class="metric-value">-8%</div>
+                  <div class="metric-label">비용</div>
+                </div>
+                <div class="metric">
+                  <div class="metric-value">낮음</div>
+                  <div class="metric-label">리스크</div>
+                </div>
+              </div>
+              <div class="scenario-summary">
+                <p>현 부서 구조를 유지하되 내부 팀 재구성과 역할 명확화를 통한 점진적 개선 시나리오입니다.</p>
+              </div>
+              <div class="scenario-highlights">
+                <div class="highlight positive">
+                  <i class="fas fa-plus-circle"></i>
+                  <span>낮은 변화 관리 부담</span>
+                </div>
+                <div class="highlight positive">
+                  <i class="fas fa-plus-circle"></i>
+                  <span>팀 간 협업 개선</span>
+                </div>
+                <div class="highlight negative">
+                  <i class="fas fa-minus-circle"></i>
+                  <span>제한적인 비용 절감</span>
+                </div>
+              </div>
+              <div class="scenario-actions">
+                <button class="btn btn-outline btn-sm view-details" data-id="2">
+                  <i class="fas fa-eye"></i> 상세 보기
+                </button>
+                <button class="btn btn-primary btn-sm select-scenario" data-id="2">
+                  <i class="fas fa-check"></i> 선택
+                </button>
+              </div>
+            </div>
+
+            <!-- Scenario Card 3 -->
+            <div class="scenario-card" data-id="3">
+              <div class="scenario-header">
+                <div class="scenario-title">시나리오 C</div>
+              </div>
+              <div class="scenario-metrics">
+                <div class="metric">
+                  <div class="metric-value">+20%</div>
+                  <div class="metric-label">효율성</div>
+                </div>
+                <div class="metric">
+                  <div class="metric-value">-18%</div>
+                  <div class="metric-label">비용</div>
+                </div>
+                <div class="metric">
+                  <div class="metric-value">높음</div>
+                  <div class="metric-label">리스크</div>
+                </div>
+              </div>
+              <div class="scenario-summary">
+                <p>사업부 중심에서 프로젝트 중심 매트릭스 조직으로 전면 개편하는 혁신적 시나리오입니다.</p>
+              </div>
+              <div class="scenario-highlights">
+                <div class="highlight positive">
+                  <i class="fas fa-plus-circle"></i>
+                  <span>인력 유연성 극대화</span>
+                </div>
+                <div class="highlight positive">
+                  <i class="fas fa-plus-circle"></i>
+                  <span>대폭적인 비용 절감</span>
+                </div>
+                <div class="highlight negative">
+                  <i class="fas fa-minus-circle"></i>
+                  <span>높은 변화 관리 리스크</span>
+                </div>
+              </div>
+              <div class="scenario-actions">
+                <button class="btn btn-outline btn-sm view-details" data-id="3">
+                  <i class="fas fa-eye"></i> 상세 보기
+                </button>
+                <button class="btn btn-primary btn-sm select-scenario" data-id="3">
+                  <i class="fas fa-check"></i> 선택
+                </button>
+              </div>
+            </div>
+
+            <!-- Scenario Card 4 -->
+            <div class="scenario-card" data-id="4">
+              <div class="scenario-header">
+                <div class="scenario-title">시나리오 D</div>
+              </div>
+              <div class="scenario-metrics">
+                <div class="metric">
+                  <div class="metric-value">+12%</div>
+                  <div class="metric-label">효율성</div>
+                </div>
+                <div class="metric">
+                  <div class="metric-value">-10%</div>
+                  <div class="metric-label">비용</div>
+                </div>
+                <div class="metric">
+                  <div class="metric-value">중간</div>
+                  <div class="metric-label">리스크</div>
+                </div>
+              </div>
+              <div class="scenario-summary">
+                <p>개발, 영업, 지원 3개 축으로 부서를 재편하고 의사결정 라인을 단순화하는 시나리오입니다.</p>
+              </div>
+              <div class="scenario-highlights">
+                <div class="highlight positive">
+                  <i class="fas fa-plus-circle"></i>
+                  <span>명확한 책임과 권한</span>
+                </div>
+                <div class="highlight positive">
+                  <i class="fas fa-plus-circle"></i>
+                  <span>관리 계층 축소</span>
+                </div>
+                <div class="highlight negative">
+                  <i class="fas fa-minus-circle"></i>
+                  <span>부서 간 사일로 발생 가능</span>
+                </div>
+              </div>
+              <div class="scenario-actions">
+                <button class="btn btn-outline btn-sm view-details" data-id="4">
+                  <i class="fas fa-eye"></i> 상세 보기
+                </button>
+                <button class="btn btn-primary btn-sm select-scenario" data-id="4">
+                  <i class="fas fa-check"></i> 선택
+                </button>
+              </div>
+            </div>
+
+            <!-- Scenario Card 5 -->
+            <div class="scenario-card" data-id="5">
+              <div class="scenario-header">
+                <div class="scenario-title">시나리오 E</div>
+              </div>
+              <div class="scenario-metrics">
+                <div class="metric">
+                  <div class="metric-value">+18%</div>
+                  <div class="metric-label">효율성</div>
+                </div>
+                <div class="metric">
+                  <div class="metric-value">-14%</div>
+                  <div class="metric-label">비용</div>
+                </div>
+                <div class="metric">
+                  <div class="metric-value">중간</div>
+                  <div class="metric-label">리스크</div>
+                </div>
+              </div>
+              <div class="scenario-summary">
+                <p>기술역량 중심으로 조직을 재편하고 현장 권한을 강화하는 수평적 구조로 전환하는 시나리오입니다.</p>
+              </div>
+              <div class="scenario-highlights">
+                <div class="highlight positive">
+                  <i class="fas fa-plus-circle"></i>
+                  <span>전문성 집중화</span>
+                </div>
+                <div class="highlight positive">
+                  <i class="fas fa-plus-circle"></i>
+                  <span>의사결정 속도 향상</span>
+                </div>
+                <div class="highlight negative">
+                  <i class="fas fa-minus-circle"></i>
+                  <span>직급체계 변경 필요</span>
+                </div>
+              </div>
+              <div class="scenario-actions">
+                <button class="btn btn-outline btn-sm view-details" data-id="5">
+                  <i class="fas fa-eye"></i> 상세 보기
+                </button>
+                <button class="btn btn-primary btn-sm select-scenario" data-id="5">
+                  <i class="fas fa-check"></i> 선택
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Next Steps -->
+        <div class="actions-container" id="next-actions" style="display: none;">
+          <button class="btn btn-outline" id="regenerate-scenarios">
+            <i class="fas fa-redo"></i> 시나리오 재생성
+          </button>
+          <button class="btn btn-primary" id="next-step" disabled>
+            <i class="fas fa-arrow-right"></i> 실행 계획 수립
+          </button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal for Scenario Details -->
+  <div class="modal-backdrop" id="scenario-detail-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">시나리오 A 상세 정보</h3>
+        <span class="modal-close" id="close-detail-modal">&times;</span>
+      </div>
+      <div class="modal-body">
+        <div class="scenario-detail-summary">
+          <p>기존 부서를 6개에서 4개로 통합하고, 핵심 업무 중심으로 인력을 재배치하는 시나리오입니다.</p>
+          <p>주요 목표는 의사결정 과정 간소화와 인건비 절감을 통한 효율성 제고입니다.</p>
+        </div>
+        
+        <div class="detail-section">
+          <h4>주요 변경 사항</h4>
+          <ul class="detail-list">
+            <li>마케팅팀과 영업팀을 '사업부'로 통합</li>
+            <li>UX/UI팀과 개발팀을 '기술부'로 통합</li>
+            <li>중간 관리 직급 25% 축소</li>
+            <li>프로젝트 중심 업무 분장 도입</li>
+          </ul>
+        </div>
+        
+        <div class="detail-section">
+          <h4>주요 지표 영향</h4>
+          <div class="detail-metrics">
+            <div class="detail-metric">
+              <div class="detail-metric-label">효율성</div>
+              <div class="detail-metric-value positive">+15%</div>
+            </div>
+            <div class="detail-metric">
+              <div class="detail-metric-label">비용</div>
+              <div class="detail-metric-value positive">-12%</div>
+            </div>
+            <div class="detail-metric">
+              <div class="detail-metric-label">인력 적합도</div>
+              <div class="detail-metric-value positive">+8%</div>
+            </div>
+            <div class="detail-metric">
+              <div class="detail-metric-label">의사결정 속도</div>
+              <div class="detail-metric-value positive">+20%</div>
+            </div>
+            <div class="detail-metric">
+              <div class="detail-metric-label">변화 관리 리스크</div>
+              <div class="detail-metric-value negative">중간</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="detail-section">
+          <h4>부서별 인력 배치</h4>
+          <div class="org-chart">
+            <div class="org-chart-container">
+              <!-- This would be a visual org chart in a real implementation -->
+              <p class="org-chart-placeholder">조직도 시각화가 여기에 표시됩니다.</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="detail-section">
+          <h4>장단점 분석</h4>
+          <div class="pros-cons">
+            <div class="pros">
+              <h5>장점</h5>
+              <ul>
+                <li>의사결정 과정 간소화</li>
+                <li>인건비 12% 절감</li>
+                <li>역할과 책임 명확화</li>
+                <li>부서 간 협업 장벽 감소</li>
+              </ul>
+            </div>
+            <div class="cons">
+              <h5>단점</h5>
+              <ul>
+                <li>중간 관리자 재배치 필요</li>
+                <li>변화 관리 비용 발생</li>
+                <li>일부 전문성 약화 가능성</li>
+                <li>초기 생산성 일시적 저하</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        
+        <div class="detail-section">
+          <h4>인력 이동 계획</h4>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>현재 부서</th>
+                <th>새 부서</th>
+                <th>인원 수</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>마케팅팀</td>
+                <td>사업부</td>
+                <td>8명</td>
+              </tr>
+              <tr>
+                <td>영업팀</td>
+                <td>사업부</td>
+                <td>12명</td>
+              </tr>
+              <tr>
+                <td>UX/UI팀</td>
+                <td>기술부</td>
+                <td>6명</td>
+              </tr>
+              <tr>
+                <td>개발팀</td>
+                <td>기술부</td>
+                <td>15명</td>
+              </tr>
+              <tr>
+                <td>인사팀</td>
+                <td>지원부</td>
+                <td>5명</td>
+              </tr>
+              <tr>
+                <td>재무팀</td>
+                <td>지원부</td>
+                <td>4명</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="export-detail">
+          <i class="fas fa-download"></i> 내보내기
+        </button>
+        <button class="btn btn-primary" id="select-from-detail">
+          <i class="fas fa-check"></i> 이 시나리오 선택
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for Scenario Comparison -->
+  <div class="modal-backdrop" id="comparison-modal">
+    <div class="modal wide-modal">
+      <div class="modal-header">
+        <h3 class="modal-title">시나리오 비교</h3>
+        <span class="modal-close" id="close-comparison-modal">&times;</span>
+      </div>
+      <div class="modal-body">
+        <div class="comparison-container">
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>항목</th>
+                <th>시나리오 A</th>
+                <th>시나리오 B</th>
+                <th>시나리오 C</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="comparison-category">효율성</td>
+                <td class="positive">+15%</td>
+                <td class="positive">+10%</td>
+                <td class="positive">+20%</td>
+              </tr>
+              <tr>
+                <td class="comparison-category">비용 절감</td>
+                <td class="positive">-12%</td>
+                <td class="positive">-8%</td>
+                <td class="positive">-18%</td>
+              </tr>
+              <tr>
+                <td class="comparison-category">리스크</td>
+                <td class="neutral">중간</td>
+                <td class="positive">낮음</td>
+                <td class="negative">높음</td>
+              </tr>
+              <tr>
+                <td class="comparison-category">인력 적합도</td>
+                <td class="positive">+8%</td>
+                <td class="positive">+5%</td>
+                <td class="positive">+12%</td>
+              </tr>
+              <tr>
+                <td class="comparison-category">의사결정 속도</td>
+                <td class="positive">+20%</td>
+                <td class="positive">+8%</td>
+                <td class="positive">+25%</td>
+              </tr>
+              <tr>
+                <td class="comparison-category">조직 구조</td>
+                <td>6개→4개 부서</td>
+                <td>현 부서 유지</td>
+                <td>매트릭스 조직</td>
+              </tr>
+              <tr>
+                <td class="comparison-category">인력 이동</td>
+                <td class="neutral">중간</td>
+                <td class="positive">최소</td>
+                <td class="negative">광범위</td>
+              </tr>
+              <tr>
+                <td class="comparison-category">실행 기간</td>
+                <td>3개월</td>
+                <td>1개월</td>
+                <td>6개월</td>
+              </tr>
+              <tr>
+                <td class="comparison-category">교육 필요성</td>
+                <td class="neutral">중간</td>
+                <td class="positive">낮음</td>
+                <td class="negative">높음</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="comparison-chart">
+          <canvas id="comparisonRadarChart"></canvas>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="export-comparison">
+          <i class="fas fa-download"></i> 비교 결과 내보내기
+        </button>
+        <button class="btn btn-primary" id="close-comparison">
+          <i class="fas fa-times"></i> 닫기
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+  
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/scenario.js"></script>
+</body>
+</html>
